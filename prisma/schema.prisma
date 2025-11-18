@@ -5,11 +5,35 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma" // default prisma , find out later
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User{
+  id      String    @id @default(uuid())
+  email   String @unique
+  name    String 
+  password  String
+  createdAt   DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  farms   Farm[]
+}
+
+model Farm{
+  id    String    @id     @default(uuid())
+  userId          String
+  farmName    String 
+  ownerName   String 
+  location        String
+  isPartner     String
+  createdAt   DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user    User  @relation(fields:[userId],references:[id])
 }
