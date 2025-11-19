@@ -20,6 +20,11 @@ export const registerValidator = [
         }),
 
     body("name").isLength({min:1}).withMessage("Name is required")
+]
 
-
+export const loginValidator = [
+     body("email").isEmail().withMessage("Email is not valid"),
+         body("password")
+        .isLength({ min: 1 }).withMessage("Password Required")
+        .isLength({ max: 128 }).withMessage('Password cant be more than 128 characters long')
 ]

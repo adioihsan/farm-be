@@ -24,7 +24,7 @@ export interface UserResponseDTO {
   createdAt: Date;
 }
 
+
 export interface LoginResponseDTO {
   token: string;
-  user: UserResponseDTO;
 }
