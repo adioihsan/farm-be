@@ -1,8 +1,8 @@
 import { Prisma } from "@prisma/client";
-import { LoginRequestDTO, RegisterRequestDTO, RegisterResponseDTO,LoginResponseDTO } from "../dtos/auth.dto";
+import { LoginRequestDTO, RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from "../dtos/auth.dto";
 import { prisma } from "../config/primsa";
 import { comparePassword, hashPassword } from "../utils/hash.util";
-import { CreateToken } from "../utils/jwt.utils";
+import { createToken } from "../utils/jwt.utils";
 
 
 export async function register(dto: RegisterRequestDTO): Promise<RegisterResponseDTO> {
@@ -34,27 +34,24 @@ export async function register(dto: RegisterRequestDTO): Promise<RegisterRespons
     return resDto
 }
 
-export async function login(dto: LoginRequestDTO):Promise<LoginResponseDTO>{
+export async function login(dto: LoginRequestDTO): Promise<LoginResponseDTO> {
     const user = await prisma.user.findUnique({
-        select: { password: true,email:true,id:true },
+        select: { password: true, email: true, id: true },
         where: {
             email: dto.email
         }
     })
-    if(!user){
+    if (!user) {
         throw new Error("Credential didnt match")
     }
 
-    const isPasswordOk= await comparePassword(dto.password,user.password)
-    if(!isPasswordOk) throw new Error("Credential didnt match")
+    const isPasswordOk = await comparePassword(dto.password, user.password)
+    if (!isPasswordOk) throw new Error("Credential didnt match")
 
-    const newToken = CreateToken({
-        userId:user.id,
-        email:user.password
-    })
+    const newToken = createToken({user})
 
-    const resDto:LoginResponseDTO = {
-        token:newToken
+    const resDto: LoginResponseDTO = {
+        token: newToken
     }
 
     return resDto;

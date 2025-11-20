@@ -16,8 +16,6 @@ export interface RegisterResponseDTO {
   createdAt: Date;
 }
 
-
-
 export interface UserResponseDTO {
   id: string;
   email: string;

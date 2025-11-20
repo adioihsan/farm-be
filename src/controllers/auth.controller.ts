@@ -25,9 +25,12 @@ export async function login(req:Request,res:Response){
     try {
         const reqDto: LoginRequestDTO = {...req.body}
         const token:LoginResponseDTO = await authService.login(reqDto)
-        return res.status(201).json(successResponse(
-            "Login Success",token
-        ))
+        res.cookie('authToken',token,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV === "production",
+            sameSite:"strict",
+        })
+        return res.status(201).json(successResponse("Login Success",token))
     } catch (error:any) {
         return res.status(500).json(
             errorResponse(error?.message || "Login Failed")
