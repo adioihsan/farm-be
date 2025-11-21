@@ -26,7 +26,6 @@ app.use(
     cors({
         origin: (origin, callback) => {
             // allowed non client url, eg:postman
-            console.log("THE ORIGIN SW:",origin)
             if (!origin) return callback(null, true);
 
             if (allowedOrigins?.includes(origin)) {
@@ -50,7 +49,6 @@ export const globalLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
-
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
