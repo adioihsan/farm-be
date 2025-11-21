@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import authRoutes from "./routes/auth.routes";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger";
+import authRoutes from "./routes/auth.routes";
 import farmRoutes from "./routes/farm.routes";
 import dashboardRoutes from "./routes/dashboard.routes"
 
@@ -16,10 +18,15 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     ?.split(",")
     .map(o => o.trim());
 
+// add own BASE_URL to allow swagger access
+const BASE_URL = process.env.API_BASE_URL
+if(BASE_URL) allowedOrigins?.push(BASE_URL)
+
 app.use(
     cors({
         origin: (origin, callback) => {
             // allowed non client url, eg:postman
+            console.log("THE ORIGIN SW:",origin)
             if (!origin) return callback(null, true);
 
             if (allowedOrigins?.includes(origin)) {
@@ -51,6 +58,7 @@ const authLimiter = rateLimit({
 });
 
 app.use(globalLimiter)
+app.use("/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/v1/auth", authLimiter, authRoutes);
 app.use("/v1/farm", farmRoutes)
 app.use("/v1/dashboard", dashboardRoutes)
