@@ -8,8 +8,9 @@ import { REFRESH_TOKEN } from "../types/constant";
 export async function register(req: Request, res: Response) {
     try {
         const reqDto: RegisterRequestDTO = { ...req.body }
-        const user = await authService.register(reqDto)
+        reqDto.email = reqDto.email.toLocaleLowerCase()
 
+        const user = await authService.register(reqDto)
         return res.status(201).json(successResponse(
             "User registered successfully", user
         ))
@@ -27,6 +28,8 @@ export async function login(req: Request, res: Response) {
         const ipAddress = req.ip || ""
         const withRefreshToken = req.query.withRefreshToken // note: if  'true' refresh token will included in response data, default:false
         const reqDto: LoginRequestDTO = { ...req.body }
+        reqDto.email = reqDto.email.toLocaleLowerCase()
+
         const tokenRes = await authService.login(reqDto, userAgent, ipAddress)
         const refreshToken = tokenRes.refreshToken
 
