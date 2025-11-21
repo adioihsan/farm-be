@@ -1,8 +1,8 @@
 export interface RegisterRequestDTO {
   email: string;
-  name:string;
+  name: string;
   password: string;
-  confirmPassword:string;
+  confirmPassword: string;
 }
 
 export interface LoginRequestDTO {
@@ -10,19 +10,27 @@ export interface LoginRequestDTO {
   password: string;
 }
 
-export interface RegisterResponseDTO {
+export interface RegisterDTO {
   id: string;
   email: string;
   createdAt: Date;
 }
 
-export interface UserResponseDTO {
+export interface UserDTO {
   id: string;
   email: string;
   createdAt: Date;
 }
 
 
-export interface LoginResponseDTO {
-  token: string;
+export interface LoginDTO {
+  accessToken: string;
+  refreshToken?: string;
 }
+
+export interface RefreshTokenDTO {
+  accessToken: string;
+  refreshToken?: string;
+}
+
+

@@ -1,21 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import { validateToken } from "../utils/jwt.utils";
+import { validateToken } from "../utils/token.utils";
 import { errorResponse } from "../utils/response";
+import { ACCESS_TOKEN } from "../types/constant";
 
 export function ProtectRoute(req: Request, res: Response, next: NextFunction) {
     try {
-        // token from cookie
-        let authToken = req.cookies?.authToken
+        // token from cookie; note: backup strategy for mobile access
+        let accessTokenToken = req.cookies?.[ACCESS_TOKEN]
 
-        if (!authToken) {
+        if (!accessTokenToken) {
             // token from header
             const tokenHeader = req.headers.authorization;
-            authToken = tokenHeader?.startsWith("Bearer ") ? tokenHeader.substring(7) : undefined
-            if (!authToken) {
+            accessTokenToken = tokenHeader?.startsWith("Bearer ") ? tokenHeader.substring(7) : undefined
+            if (!accessTokenToken) {
                 throw new Error("Unauthorized")
             }
         }
-        const payload = validateToken(authToken)
+        const payload = validateToken(accessTokenToken)
         req.user = payload.user
         return next()
     } catch (error: any) {

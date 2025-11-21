@@ -1,11 +1,11 @@
-import { Prisma } from "@prisma/client";
-import { LoginRequestDTO, RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from "../dtos/auth.dto";
+
+import { LoginRequestDTO, RegisterRequestDTO, RefreshTokenDTO, RegisterDTO, LoginDTO } from "../dtos/auth.dto";
 import { prisma } from "../config/primsa";
 import { comparePassword, hashPassword } from "../utils/hash.util";
-import { createToken } from "../utils/jwt.utils";
+import { createToken, generateRefreshToken, hashRefreshToken } from "../utils/token.utils";
 
 
-export async function register(dto: RegisterRequestDTO): Promise<RegisterResponseDTO> {
+export async function register(dto: RegisterRequestDTO): Promise<RegisterDTO> {
     const isExisting = await prisma.user.findUnique({
         where: {
             email: dto.email
@@ -25,7 +25,7 @@ export async function register(dto: RegisterRequestDTO): Promise<RegisterRespons
         }
     })
 
-    const resDto: RegisterResponseDTO = {
+    const resDto: RegisterDTO = {
         id: user.id,
         email: user.email,
         createdAt: user.createdAt,
@@ -34,9 +34,9 @@ export async function register(dto: RegisterRequestDTO): Promise<RegisterRespons
     return resDto
 }
 
-export async function login(dto: LoginRequestDTO): Promise<LoginResponseDTO> {
+export async function login(dto: LoginRequestDTO, userAgent: string, ipAddress: string): Promise<LoginDTO> {
     const user = await prisma.user.findUnique({
-        select: { password: true, email: true, id: true },
+        select: { password: true, email: true, id: true, name: true },
         where: {
             email: dto.email
         }
@@ -48,11 +48,90 @@ export async function login(dto: LoginRequestDTO): Promise<LoginResponseDTO> {
     const isPasswordOk = await comparePassword(dto.password, user.password)
     if (!isPasswordOk) throw new Error("Credential didnt match")
 
-    const newToken = createToken({user})
+    const newAccessToken = createToken({ user: { id: user.id, email: user.email, name: user.name } })
+    const refreshToken = generateRefreshToken()
 
-    const resDto: LoginResponseDTO = {
-        token: newToken
+    await prisma.session.create({
+        data: {
+            userId: user.id,
+            refreshToken: refreshToken.hashed,
+            userAgent,
+            ipAddress,
+            expiresAt: refreshToken.expiration
+        }
+    })
+
+    const resDto: LoginDTO = {
+        accessToken: newAccessToken,
+        refreshToken: refreshToken.raw
     }
 
     return resDto;
+}
+
+export async function refreshToken(refreshTokenRaw: string, userAgent: string, ipAddress: string): Promise<RefreshTokenDTO> {
+
+    const refreshTokenHashed = hashRefreshToken(refreshTokenRaw);
+
+    const session = await prisma.session.findFirst({
+        where: {
+            refreshToken: refreshTokenHashed,
+            revokedAt: null,
+            expiresAt: { gt: new Date() }
+        },
+        include: { user: true }
+    })
+
+    if (!session || !session.user) {
+        throw new Error("Invalid or expired refresh token")
+    }
+
+    await prisma.session.update({
+        where: { id: session.id },
+        data: { revokedAt: new Date() }
+    })
+
+    const user = session.user
+    const newRefreshToken = generateRefreshToken()
+    const newAccessToken = createToken({ user: { id: session.user.id, email: user.email, name: user.name } })
+
+    await prisma.session.create({
+        data: {
+            userId: session.userId,
+            refreshToken: newRefreshToken.hashed,
+            userAgent,
+            ipAddress,
+            expiresAt: newRefreshToken.expiration
+        }
+    })
+    const resDto: RefreshTokenDTO = {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken.raw
+    }
+    return resDto;
+}
+
+export async function logout(refreshTokenRaw: string): Promise<void> {
+    if (!refreshTokenRaw) {
+        throw new Error("Missing refresh token");
+    }
+    const refreshTokenHashed = hashRefreshToken(refreshTokenRaw);
+    const session = await prisma.session.findFirst({
+        where: {
+            refreshToken: refreshTokenHashed,
+            revokedAt: null,
+        },
+    });
+
+    if (!session) {
+        return;
+    }
+
+    await prisma.session.update({
+        where: { id: session.id },
+        data: {
+            revokedAt: new Date(),
+        },
+    });
+    return;
 }

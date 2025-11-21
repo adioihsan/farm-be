@@ -11,29 +11,45 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-model User{
-  id      String    @id @default(uuid())
-  email   String @unique
-  name    String 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
   password  String
-  createdAt   DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  farms   Farm[]
+  sessions Session[]
+  farms    Farm[]
 }
 
-model Farm{
-  id    String    @id     @default(uuid())
-  userId          String
-  farmName    String 
-  ownerName   String 
-  location        String
-  isPartner     String
-  createdAt   DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+model Session {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  refreshToken String
+  userAgent        String?
+  ipAddress        String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  user    User  @relation(fields:[userId],references:[id])
+  @@index([userId])
+  @@index([refreshToken])
+}
+
+model Farm {
+  id        String   @id @default(cuid())
+  userId    String
+  farmName  String
+  ownerName String
+  location  String
+  isPartner Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
