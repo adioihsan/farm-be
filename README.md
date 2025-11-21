@@ -87,9 +87,10 @@ npm install
 Create a `.env` file:
 
 ```
+NODE_ENV=development
 PORT=7000
 DATABASE_URL="postgresql://user:password@localhost:5432/db"
-JWT_SECRET=your-secret
+JWT_SECRET=change-with-your-secret
 ```
 
 ### Run the Development Server
@@ -172,10 +173,11 @@ docker compose up -d --force-recreate
 ## Production Environment Variables
 
 ```
+NODE_ENV=production
 PORT=7000
 DATABASE_URL="postgresql://user:password@db:5432/db"
-JWT_SECRET=very-secret
-NODE_ENV=production
+JWT_SECRET=change-with-your-secret
+
 ```
 
 ---

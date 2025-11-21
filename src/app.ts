@@ -18,10 +18,6 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     ?.split(",")
     .map(o => o.trim());
 
-// add own BASE_URL to allow swagger access
-const BASE_URL = process.env.API_BASE_URL
-if(BASE_URL) allowedOrigins?.push(BASE_URL)
-
 app.use(
     cors({
         origin: (origin, callback) => {

@@ -1,7 +1,13 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import path from "path";
 
-const srcSwaggerPath = path.resolve(process.cwd(), "src", "swagger");
+const IS_PROD = process.env.NODE_ENV === "production";
+
+const swaggerDir = IS_PROD
+  ? path.resolve(__dirname, "../swagger") 
+  : path.resolve(process.cwd(), "src", "swagger"); 
+
+const fileExt = IS_PROD ? ".js" : ".ts";
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -12,10 +18,13 @@ const options: swaggerJsdoc.Options = {
       description: "API documentation for Japfa fullstack test",
     },
     servers: [
-      {
-        url: process.env.API_BASE_URL || "http://localhost:7000",
-      },
-    ],
+      IS_PROD
+        ? {} 
+        : {
+            url: `http://localhost:${process.env.PORT || 7000}`,
+            description: "Local Development Server",
+          },
+    ].filter(Boolean),
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -25,15 +34,12 @@ const options: swaggerJsdoc.Options = {
         },
       },
     },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
+    security: [{ bearerAuth: [] }],
   },
+
   apis: [
-    path.join(srcSwaggerPath, "*.swagger.ts"),
-    path.join(srcSwaggerPath, "schemas", "*.ts"),
+    path.join(swaggerDir, `*${fileExt}`),
+    path.join(swaggerDir, "schemas", `*${fileExt}`),
   ],
 };
 

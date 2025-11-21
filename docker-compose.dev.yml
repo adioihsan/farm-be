@@ -12,4 +12,4 @@ services:
       - /app/node_modules
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    command: npm run dev
+    command: sh -c "npx prisma migrate dev && npm run dev"
