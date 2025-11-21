@@ -12,18 +12,33 @@ const app = express();
 
 app.use(helmet());
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-}));
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ?.split(",")
+    .map(o => o.trim());
+
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // allowed non client url, eg:postman
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins?.includes(origin)) {
+                return callback(null, true);
+            } else {
+                return callback(new Error("Not allowed by CORS"), false);
+            }
+        },
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true,
+    })
+);
 
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser())
 
 
 export const globalLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, 
+    windowMs: 1 * 60 * 1000,
     max: 100,
     standardHeaders: true,
     legacyHeaders: false,
@@ -37,7 +52,7 @@ const authLimiter = rateLimit({
 
 app.use(globalLimiter)
 app.use("/v1/auth", authLimiter, authRoutes);
-app.use("/v1/farm",farmRoutes)
-app.use("/v1/dashboard",dashboardRoutes)
+app.use("/v1/farm", farmRoutes)
+app.use("/v1/dashboard", dashboardRoutes)
 
 export default app;
