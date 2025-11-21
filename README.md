@@ -177,6 +177,7 @@ NODE_ENV=production
 PORT=7000
 DATABASE_URL="postgresql://user:password@db:5432/db"
 JWT_SECRET=change-with-your-secret
+DOMAIN= https://your-hosted-domain.con
 
 ```
 

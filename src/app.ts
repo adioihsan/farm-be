@@ -20,6 +20,11 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 // allow locals origin
 allowedOrigins?.push(`http://localhost:${process.env.PORT}`);
+// allow production domain origin
+const DOMAIN = process.env.DOMAIN
+if(process.env.NODE_ENV == "production" && DOMAIN){
+    allowedOrigins?.push(DOMAIN);
+}
 
 app.use(
     cors({
