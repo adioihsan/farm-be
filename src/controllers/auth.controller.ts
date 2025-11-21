@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { LoginRequestDTO, RegisterRequestDTO } from "../dtos/auth.dto";
 import * as authService from "../services/auth.service"
-import { errorResponse, successResponse } from "../utils/response";
+import { errorResponse, successResponse } from "../utils/response.util";
 import { REFRESH_TOKEN } from "../types/constant";
 
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { successResponse, errorResponse } from "../utils/response";
+import { successResponse, errorResponse } from "../utils/response.util";
 import * as farmService from "../services/farm.service";
 import { CreateFarmDTO, UpdateFarmDTO } from "../dtos/farm.dto";
 

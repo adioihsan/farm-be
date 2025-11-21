@@ -2,7 +2,7 @@
 import { LoginRequestDTO, RegisterRequestDTO, RefreshTokenDTO, RegisterDTO, LoginDTO } from "../dtos/auth.dto";
 import { prisma } from "../config/primsa";
 import { comparePassword, hashPassword } from "../utils/hash.util";
-import { createToken, generateRefreshToken, hashRefreshToken } from "../utils/token.utils";
+import { createToken, generateRefreshToken, hashRefreshToken } from "../utils/token.util";
 
 
 export async function register(dto: RegisterRequestDTO): Promise<RegisterDTO> {

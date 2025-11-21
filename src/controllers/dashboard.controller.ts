@@ -5,7 +5,7 @@ import {
   DashboardRequestDTO,
 } from "../dtos/dashboard.dto";
 import * as dashboardService from "../services/dashboard.service";
-import { successResponse, errorResponse } from "../utils/response";
+import { successResponse, errorResponse } from "../utils/response.util";
 
 export async function getDashboard(req: Request, res: Response) {
   try {

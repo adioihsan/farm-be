@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { validateToken } from "../utils/token.utils";
-import { errorResponse } from "../utils/response";
+import { validateToken } from "../utils/token.util";
+import { errorResponse } from "../utils/response.util";
 import { ACCESS_TOKEN } from "../types/constant";
 
 export function ProtectRoute(req: Request, res: Response, next: NextFunction) {
