@@ -1,4 +1,4 @@
-import { prisma } from "../config/primsa";
+import { prisma } from "../config/prisma";
 import {
   DashboardRequestDTO,
   DashboardResponseDTO,

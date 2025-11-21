@@ -1,6 +1,6 @@
 
 import { LoginRequestDTO, RegisterRequestDTO, RefreshTokenDTO, RegisterDTO, LoginDTO } from "../dtos/auth.dto";
-import { prisma } from "../config/primsa";
+import { prisma } from "../config/prisma";
 import { comparePassword, hashPassword } from "../utils/hash.util";
 import { createToken, generateRefreshToken, hashRefreshToken } from "../utils/token.util";
 

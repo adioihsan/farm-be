@@ -1,10 +1,19 @@
 
 import { Farm } from "@prisma/client";
-import { prisma } from "../config/primsa";
+import { prisma } from "../config/prisma";
 import { CreateFarmDTO, UpdateFarmDTO } from "../dtos/farm.dto";
 
-export async function createFarm(userId: string,dto: CreateFarmDTO): Promise<Farm> {
-    const farm = await prisma.farm.create({
+export async function createFarm(userId: string, dto: CreateFarmDTO): Promise<Farm> {
+
+    const exists = await prisma.farm.findFirst({
+        where: { userId, farmName: dto.farmName },
+    });
+
+    if (exists) {
+        throw new Error("Farm name already exists");
+    }
+
+    return prisma.farm.create({
         data: {
             userId,
             farmName: dto.farmName,
@@ -13,10 +22,9 @@ export async function createFarm(userId: string,dto: CreateFarmDTO): Promise<Far
             isPartner: dto.isPartner,
         },
     });
-    return farm;
 }
 
-export async function getFarmById(farmId: string,userId?: string): Promise<Farm> {
+export async function getFarmById(farmId: string, userId?: string): Promise<Farm> {
     const farm = await prisma.farm.findFirst({
         where: {
             id: farmId,
@@ -39,16 +47,31 @@ export async function listFarmsByUser(userId: string): Promise<Farm[]> {
     return farms;
 }
 
-export async function updateFarm(farmId: string,userId: string,dto: UpdateFarmDTO): Promise<Farm> {
+export async function updateFarm(
+    farmId: string,
+    userId: string,
+    dto: UpdateFarmDTO
+): Promise<Farm> {
+
     const existing = await prisma.farm.findFirst({
-        where: { id: farmId, userId },
+        where: { id: farmId, userId }
     });
 
     if (!existing) {
         throw new Error("Farm not found or you are not allowed to update this farm");
     }
 
-    const updated = await prisma.farm.update({
+    if (dto.farmName && dto.farmName !== existing.farmName) {
+        const nameExists = await prisma.farm.findFirst({
+            where: { userId, farmName: dto.farmName },
+        });
+
+        if (nameExists) {
+            throw new Error("Farm name already exists");
+        }
+    }
+
+    return prisma.farm.update({
         where: { id: farmId },
         data: {
             farmName: dto.farmName ?? existing.farmName,
@@ -57,10 +80,10 @@ export async function updateFarm(farmId: string,userId: string,dto: UpdateFarmDT
             isPartner: dto.isPartner ?? existing.isPartner,
         },
     });
-    return updated;
 }
 
-export async function deleteFarm(farmId: string,userId: string): Promise<void> {
+
+export async function deleteFarm(farmId: string, userId: string): Promise<void> {
     const existing = await prisma.farm.findFirst({
         where: { id: farmId, userId },
     });

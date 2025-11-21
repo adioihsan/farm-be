@@ -1,3 +1,3 @@
-import { prisma } from "./config/primsa";
+import { prisma } from "./config/prisma";
 
 prisma.user.findMany()
