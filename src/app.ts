@@ -18,6 +18,9 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     ?.split(",")
     .map(o => o.trim());
 
+// allow locals origin
+allowedOrigins?.push(`http://localhost:${process.env.PORT}`);
+
 app.use(
     cors({
         origin: (origin, callback) => {

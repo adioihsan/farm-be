@@ -67,4 +67,4 @@
  *             data:
  *               $ref: '#/components/schemas/Farm'
  */
-export {};
+export const _ = null;

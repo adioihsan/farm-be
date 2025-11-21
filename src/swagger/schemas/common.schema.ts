@@ -24,4 +24,4 @@
  *           description: Optional error details (validation errors, etc.)
  *           nullable: true
  */
-export {};
+export const _ = null;

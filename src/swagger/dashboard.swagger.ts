@@ -34,4 +34,4 @@
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-export {};
+export const _ = null;

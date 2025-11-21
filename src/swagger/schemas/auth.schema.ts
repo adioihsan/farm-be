@@ -83,4 +83,4 @@
  *             data:
  *               $ref: '#/components/schemas/User'
  */
-export {};
+export const _ = null;

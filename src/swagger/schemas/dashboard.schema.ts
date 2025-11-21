@@ -45,4 +45,4 @@
  *             data:
  *               $ref: '#/components/schemas/DashboardData'
  */
-export {};
+export const _ = null;
