@@ -1,6 +1,8 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import path from "path";
 
+const srcSwaggerPath = path.resolve(process.cwd(), "src", "swagger");
+
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: "3.0.3",
@@ -30,8 +32,8 @@ const options: swaggerJsdoc.Options = {
     ],
   },
   apis: [
-    path.join(__dirname, "*.swagger.ts"),
-    path.join(__dirname, "schemas", "*.ts"),
+    path.join(srcSwaggerPath, "*.swagger.ts"),
+    path.join(srcSwaggerPath, "schemas", "*.ts"),
   ],
 };
 

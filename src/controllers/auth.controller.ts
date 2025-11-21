@@ -45,7 +45,7 @@ export async function login(req: Request, res: Response) {
         }
         return res.status(201).json(successResponse("Login Success", tokenRes))
     } catch (error: any) {
-        return res.status(500).json(
+        return res.status(400).json(
             errorResponse(error?.message || "Login Failed")
         );
     }
@@ -78,7 +78,7 @@ export async function refreshToken(req: Request, res: Response) {
         return res.status(201).json(successResponse("Login Success", refreshTokenRes))
 
     } catch (error: any) {
-        return res.status(500).json(
+        return res.status(400).json(
             errorResponse(error?.message || "Refresh Token Failed")
         );
     }
@@ -107,7 +107,7 @@ export async function logout(req: Request, res: Response) {
 
         return res.json(successResponse("Logged out successfully"));
     } catch (error: any) {
-        return res.status(500).json(
+        return res.status(400).json(
             errorResponse(error?.message || "Failed to logout")
         );
     }
